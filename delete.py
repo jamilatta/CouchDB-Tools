@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #Ptyhon script to delete documents on couchDB
 #Using lib: couchdb-python
-#Url: http://code.google.com/p/couchdb-python/
+#Lib Url: http://code.google.com/p/couchdb-python/
 
 from couchdb import *
 import argparse
@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     #create the parser
     parser = argparse.ArgumentParser(
-        description='Delete all documents by view')
+        description='Delete documents on CouchDB')
         
     #add the arguments
     parser.add_argument(
@@ -44,9 +44,7 @@ if __name__ == "__main__":
     # parse the command line
     args = parser.parse_args()
 
-    print "---+--- ACCESS SERVER: " + args.server
     server = Server(args.server)
-    print "---+--- ACCESS DATABASE: " + args.database
     db = server[args.database]
 
     #Views
@@ -54,22 +52,21 @@ if __name__ == "__main__":
         if args.key:
             for row in db.view(args.path + args.view, None, key=args.key):
                 doc = db.get(row.id)
-                print "---+--- DELETE DOCUMENT ID: " + row.id
                 db.delete(doc)
         elif args.input:
             for f in open(args.input, 'r'):
                 for row in db.view(args.path + args.view, None, key=f.strip()):
                     doc = db.get(row.id)
-                    print "---+--- DELETE DOCUMENT ID: " + doc.id
                     db.delete(doc)
         else:
             for row in db.view(args.path + args.view):
                 doc = db.get(row.id)
-                print "---+--- DELETE DOCUMENT ID: " + row.id
                 db.delete(doc)
     #ID
     if args.identify:
         doc = db.get(args.identify)
-        print "---+--- DELETE DOCUMENT ID: " + doc.id
         db.delete(doc)
+    
+    
+    
         

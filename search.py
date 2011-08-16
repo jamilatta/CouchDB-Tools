@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	
     #create the parser
     parser = argparse.ArgumentParser(
-        description='Search documents on couchDB')
+        description='Search documents on CouchDB')
         
 	#add the arguments
     parser.add_argument(
@@ -40,7 +40,9 @@ if __name__ == "__main__":
     parser.add_argument(
         '-k', '--key', help='Key for search Ex.: S2176-94512010000500019',
         default="")
-        
+
+    parser.add_argument(
+        '-b', '--bulk', help='Save like CouchDB Bulk', action='store_true')
     # parse the command line
     args = parser.parse_args()
     
@@ -54,13 +56,43 @@ if __name__ == "__main__":
             sys.exit()
 
     if args.view:
-        args.output.write('{ "docs" : ')
-        args.output.write('\n[\n')
+        if args.bulk:
+            args.output.write('{ "docs" : ')
+            args.output.write('\n[\n')
         
-        for row in db.view(args.path + args.view, None, key=args.key):
-            doc = db.get(row.id)
-            args.output.write(json.encode(doc).encode('utf-8') + ',\n')
-            
-        args.output.write('\n]')
-        args.output.write('\n}')
+        if args.key:
+            for row in db.view(args.path + args.view, None, key=args.key):
+                doc = db.get(row.id)
+                args.output.write(json.encode(doc).encode('utf-8') + ',\n')
+        else:
+            for row in db.view(args.path + args.view):
+                doc = db.get(row.id)
+                args.output.write(json.encode(doc).encode('utf-8') + ',\n')
+
+        if args.bulk:
+            args.output.write('\n]')
+            args.output.write('\n}')
         args.output.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
