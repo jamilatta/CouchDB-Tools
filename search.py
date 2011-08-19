@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- encoding: utf-8 -*-
 #Ptyhon script to search documents on couchDB
 #Using lib: couchdb-python
 #Lib Url: http://code.google.com/p/couchdb-python/
@@ -49,50 +50,29 @@ if __name__ == "__main__":
     server = Server(args.server)
     db = server[args.database]
     
-    if args.view:
-        if args.length:
-            results = db.view(args.path + args.view, None, key=args.key)
-            args.output.write(str(results.total_rows) + '\n')
-            sys.exit()
 
     if args.view:
+        if args.length:
+            results = db.view(args.path + args.view)
+            args.output.write(str(results.total_rows) + '\n')
+            sys.exit()
+            
         if args.bulk:
             args.output.write('{ "docs" : ')
-            args.output.write('\n[\n')
-        
+            args.output.write('\n[')
+            
+        endline = ',\n' if args.bulk else '\n'
+
         if args.key:
             for row in db.view(args.path + args.view, None, key=args.key):
                 doc = db.get(row.id)
-                args.output.write(json.encode(doc).encode('utf-8') + ',\n')
+                args.output.write(json.encode(doc).encode('utf-8') + endline)
         else:
             for row in db.view(args.path + args.view):
                 doc = db.get(row.id)
-                args.output.write(json.encode(doc).encode('utf-8') + ',\n')
+                args.output.write(json.encode(doc).encode('utf-8') + endline)
 
         if args.bulk:
-            args.output.write('\n]')
+            args.output.write(']')
             args.output.write('\n}')
         args.output.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        

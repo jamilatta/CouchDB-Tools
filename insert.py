@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- encoding: utf-8 -*-
 #Ptyhon script to search documents on couchDB
 #Using lib: couchdb-python
 #Lib Url: http://code.google.com/p/couchdb-python/
@@ -6,6 +7,7 @@
 from couchdb import *
 import argparse
 import sys
+import json
 
 if __name__ == "__main__":
 	
@@ -27,14 +29,17 @@ if __name__ == "__main__":
 
     parser.add_argument(
         '-l', '--log', type=argparse.FileType('w'), default=sys.stdout,
-       help='log the inserted documents (CouchDB format)', metavar='log.json')
+       help='Log the inserted documents (CouchDB format)', metavar='log.json')
         
     # parse the command line
     args = parser.parse_args()
     
     server = Server(args.server)
     db = server[args.database]
-    
-    doc = dict(eval(args.file_name.read()))
-    
-    db.save(doc)
+
+    for l in args.file_name.readlines():
+        ljson = dict(eval(l))
+        try:
+           print db.save(ljson)
+        except Exception, e:
+           args.log.write('{"Erro":"' + str(e) + '"},\n')

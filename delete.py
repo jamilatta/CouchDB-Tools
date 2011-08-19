@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- encoding: utf-8 -*-
 #Ptyhon script to delete documents on couchDB
 #Using lib: couchdb-python
 #Lib Url: http://code.google.com/p/couchdb-python/
