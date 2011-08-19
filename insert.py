@@ -13,7 +13,7 @@ if __name__ == "__main__":
 	
     #create the parser
     parser = argparse.ArgumentParser(
-        description='Insert documents on CouchDB')
+        description='insert documents on CouchDB')
         
     #add the arguments
     parser.add_argument(
@@ -21,15 +21,15 @@ if __name__ == "__main__":
         type=argparse.FileType('r'))
         
     parser.add_argument(
-        '-s', '--server', help='Server of couchdb Ex.: http://localhost:5984/',
+        '-s', '--server', help='server of couchdb Ex.: http://localhost:5984/',
         default="http://localhost:5984/")
         
     parser.add_argument(
-        '-d', '--database', help='Set the database, default: test', default="test")        
+        '-d', '--database', help='set the database, default: test', default="test")        
 
     parser.add_argument(
         '-l', '--log', type=argparse.FileType('w'), default=sys.stdout,
-       help='Log the inserted documents (CouchDB format)', metavar='log.json')
+       help='log the inserted documents (CouchDB format)', metavar='log.json')
         
     # parse the command line
     args = parser.parse_args()
