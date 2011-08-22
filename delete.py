@@ -6,6 +6,7 @@
 
 from couchdb import *
 import argparse
+import time
 
 if __name__ == "__main__":
 
@@ -39,7 +40,9 @@ if __name__ == "__main__":
         '-p', '--path',
         help='path of url couch for view, default: _design/couchdb/_view/',
         default="_design/couchdb/_view/")
-
+        
+    parser.add_argument("-t", "--time", type=float,
+        help="Delay between deleted docs", default=0.0)
 
     # parse the command line
     args = parser.parse_args()
@@ -53,19 +56,26 @@ if __name__ == "__main__":
             for row in db.view(args.path + args.view, None, key=args.key):
                 doc = db.get(row.id)
                 db.delete(doc)
+                time.sleep(args.time)
+
         elif args.input:
             for f in open(args.input, 'r'):
                 for row in db.view(args.path + args.view, None, key=f.strip()):
                     doc = db.get(row.id)
                     db.delete(doc)
+                    time.sleep(args.time)
+
         else:
             for row in db.view(args.path + args.view):
                 doc = db.get(row.id)
                 db.delete(doc)
+                time.sleep(args.time)
+
     #ID
     if args.identify:
         doc = db.get(args.identify)
         db.delete(doc)
+        time.sleep(args.time)
     
     
     

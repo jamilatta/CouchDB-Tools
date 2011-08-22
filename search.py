@@ -7,43 +7,44 @@
 from couchdb import *
 import argparse
 import sys
+import time
 
 if __name__ == "__main__":
 	
     #create the parser
-    parser = argparse.ArgumentParser(
-        description='search documents on CouchDB')
+    parser = argparse.ArgumentParser(description='search documents on CouchDB')
         
 	#add the arguments
-    parser.add_argument(
-        '-s', '--server', help='server of couchdb Ex.: http://localhost:5984/',
+    parser.add_argument('-s', '--server',
+        help='server of couchdb Ex.: http://localhost:5984/',
         default="http://localhost:5984/")
         
-    parser.add_argument(
-        '-d', '--database', help='set the database, default: test', default="test")
+    parser.add_argument('-d', '--database', help='set the database, default: test',
+        default="test")
         
-    parser.add_argument(
-        '-v', '--view', help='siew name Ex.: title_id', default="")
+    parser.add_argument('-v', '--view', help='siew name Ex.: title_id')
 
-    parser.add_argument(
-        '-p', '--path',
+    parser.add_argument('-p', '--path',
         help='path of url couch for view, default: _design/couchdb/_view/',
         default="_design/couchdb/_view/")
 
-    parser.add_argument(
-        '-o', '--output', type=argparse.FileType('w'), default=sys.stdout,
-       help='the file where the JSON output should be written'
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+        default=sys.stdout,
+        help='the file where the JSON output should be written'
              ' (default: write to stdout)', metavar='output.json')
 
-    parser.add_argument(
-        '-l', '--length', help='view name Ex.: title_id', action='store_true')
+    parser.add_argument('-l', '--length', help='view name Ex.: title_id',
+        action='store_true')
 
     parser.add_argument(
         '-k', '--key', help='key for search Ex.: S2176-94512010000500019',
         default="")
 
-    parser.add_argument(
-        '-b', '--bulk', help='save like CouchDB Bulk', action='store_true')
+    parser.add_argument('-b', '--bulk', help='save like CouchDB Bulk',
+        action='store_true')
+
+    parser.add_argument("-t", "--time", type=float,
+        help="Delay between returned docs", default=0.0)
         
     # parse the command line
     args = parser.parse_args()
@@ -68,11 +69,13 @@ if __name__ == "__main__":
                 doc = db.get(row.id)
                 print row.id
                 args.output.write(json.encode(doc).encode('utf-8') + endline)
+                time.sleep(args.time)
         else:
             for row in db.view(args.path + args.view):
                 doc = db.get(row.id)
                 print row.id
                 args.output.write(json.encode(doc).encode('utf-8') + endline)
+                time.sleep(args.time)
 
         if args.bulk:
             args.output.write(']')
@@ -82,7 +85,7 @@ if __name__ == "__main__":
     else:
 
         if args.length:
-            results = db.view('_all_docs', include_docs=True)
+            results = db.view('_all_docs')
             args.output.write(str(results.total_rows) + '\n')
             sys.exit(1)
             
@@ -96,6 +99,7 @@ if __name__ == "__main__":
                 doc = db.get(row.id)
                 print row.id
                 args.output.write(json.encode(doc).encode('utf-8') + endline)
+                time.sleep(args.time)
 
         if args.bulk:
             args.output.write(']')

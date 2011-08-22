@@ -29,7 +29,10 @@ if __name__ == "__main__":
     parser.add_argument(
         '-l', '--log', type=argparse.FileType('w'), default=sys.stdout,
        help='Log the inserted documents (CouchDB format)', metavar='log.json')
-       
+
+    parser.add_argument("-t", "--time", type=float,
+        help="Delay between inserted docs", default=0.0)
+        
     # parse the command line
     args = parser.parse_args()
 
@@ -40,5 +43,6 @@ if __name__ == "__main__":
         ldict = dict(eval(l))
         try:
            print db.save(ldict)
+           time.sleep(args.time)
         except Exception, e:
            args.log.write('{"Erro":"' + str(e) + '"},\n')
