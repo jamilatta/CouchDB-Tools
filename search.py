@@ -12,22 +12,22 @@ if __name__ == "__main__":
 	
     #create the parser
     parser = argparse.ArgumentParser(
-        description='Search documents on CouchDB')
+        description='search documents on CouchDB')
         
 	#add the arguments
     parser.add_argument(
-        '-s', '--server', help='Server of couchdb Ex.: http://localhost:5984/',
+        '-s', '--server', help='server of couchdb Ex.: http://localhost:5984/',
         default="http://localhost:5984/")
         
     parser.add_argument(
-        '-d', '--database', help='Set the database, default: test', default="test")        
+        '-d', '--database', help='set the database, default: test', default="test")
         
     parser.add_argument(
-        '-v', '--view', help='View name Ex.: title_id', default="")        	
+        '-v', '--view', help='siew name Ex.: title_id', default="")
 
     parser.add_argument(
         '-p', '--path',
-        help='Path of url couch for view, default: _design/couchdb/_view/',
+        help='path of url couch for view, default: _design/couchdb/_view/',
         default="_design/couchdb/_view/")
 
     parser.add_argument(
@@ -36,26 +36,26 @@ if __name__ == "__main__":
              ' (default: write to stdout)', metavar='output.json')
 
     parser.add_argument(
-        '-l', '--length', help='View name Ex.: title_id', action='store_true')
+        '-l', '--length', help='view name Ex.: title_id', action='store_true')
 
     parser.add_argument(
-        '-k', '--key', help='Key for search Ex.: S2176-94512010000500019',
+        '-k', '--key', help='key for search Ex.: S2176-94512010000500019',
         default="")
 
     parser.add_argument(
-        '-b', '--bulk', help='Save like CouchDB Bulk', action='store_true')
+        '-b', '--bulk', help='save like CouchDB Bulk', action='store_true')
+        
     # parse the command line
     args = parser.parse_args()
     
     server = Server(args.server)
     db = server[args.database]
     
-
     if args.view:
         if args.length:
             results = db.view(args.path + args.view)
             args.output.write(str(results.total_rows) + '\n')
-            sys.exit()
+            sys.exit(1)
             
         if args.bulk:
             args.output.write('{ "docs" : ')
@@ -66,10 +66,35 @@ if __name__ == "__main__":
         if args.key:
             for row in db.view(args.path + args.view, None, key=args.key):
                 doc = db.get(row.id)
+                print row.id
                 args.output.write(json.encode(doc).encode('utf-8') + endline)
         else:
             for row in db.view(args.path + args.view):
                 doc = db.get(row.id)
+                print row.id
+                args.output.write(json.encode(doc).encode('utf-8') + endline)
+
+        if args.bulk:
+            args.output.write(']')
+            args.output.write('\n}')
+        args.output.close()
+        
+    else:
+
+        if args.length:
+            results = db.view('_all_docs', include_docs=True)
+            args.output.write(str(results.total_rows) + '\n')
+            sys.exit(1)
+            
+        if args.bulk:
+            args.output.write('{ "docs" : ')
+            args.output.write('\n[')
+
+        endline = ',\n' if args.bulk else '\n'
+
+        for row in db.view('_all_docs', include_docs=True):
+                doc = db.get(row.id)
+                print row.id
                 args.output.write(json.encode(doc).encode('utf-8') + endline)
 
         if args.bulk:
