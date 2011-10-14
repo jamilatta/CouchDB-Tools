@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- encoding: utf-8 -*-
 #Ptyhon script to search documents on couchDB
 #Using lib: couchdb-python
